@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' data: blob:; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    >
+    <meta name="theme-color" content="#f7f7f5">
+    <title>StyleMate 流程框架</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <button class="brand" type="button" data-action="go-home">StyleMate</button>
+        <button class="history-button" type="button" data-action="show-history">
+          本机记录 <span data-history-count>0</span>
+        </button>
+      </header>
+
+      <section class="screen intro-screen" data-screen="intro">
+        <div class="page-tag">基础流程 Demo</div>
+        <h1>移动端穿搭助手</h1>
+        <p class="lead">先验证用户从输入需求到获得穿搭建议的完整流程，暂不接入在线 AI。</p>
+
+        <div class="placeholder-card">
+          <span>首页视觉占位区</span>
+          <strong>后续可放品牌主视觉或产品说明</strong>
+        </div>
+
+        <div class="flow-overview" aria-label="功能流程">
+          <div><b>1</b><span>选择场景</span></div>
+          <div><b>2</b><span>设置气质<br>添加照片</span></div>
+          <div><b>3</b><span>选择衣橱</span></div>
+          <div><b>4</b><span>查看建议</span></div>
+        </div>
+
+        <button class="primary-button" type="button" data-action="start">开始体验</button>
+        <p class="offline-note">完全离线运行 · 照片不会上传</p>
+      </section>
+
+      <section class="flow-screen is-hidden" data-screen="flow" aria-live="polite">
+        <header class="flow-header">
+          <button class="icon-button" type="button" data-action="back" aria-label="返回上一步">←</button>
+          <div>
+            <span data-step-label>第 1 步，共 4 步</span>
+            <strong data-step-title>今天要去哪里？</strong>
+          </div>
+          <button class="text-button" type="button" data-action="go-home">退出</button>
+        </header>
+        <div class="progress-track" aria-hidden="true"><span data-progress></span></div>
+
+        <section class="step" data-step="1">
+          <div class="section-heading">
+            <span>页面 01</span>
+            <h2>选择穿搭场景</h2>
+            <p>用于决定建议的正式度和搭配重点。</p>
+          </div>
+
+          <div class="choice-grid" data-choice-group="scene">
+            <button class="choice-card is-selected" type="button" data-value="work"><strong>日常通勤</strong><small>利落、不紧绷</small></button>
+            <button class="choice-card" type="button" data-value="date"><strong>约会见面</strong><small>柔和、有记忆点</small></button>
+            <button class="choice-card" type="button" data-value="weekend"><strong>周末出游</strong><small>舒适、适合走动</small></button>
+            <button class="choice-card" type="button" data-value="interview"><strong>面试汇报</strong><small>专业、可信赖</small></button>
+          </div>
+
+          <div class="field-block">
+            <strong>天气体感</strong>
+            <div class="chip-row" data-choice-group="weather">
+              <button class="chip is-selected" type="button" data-value="mild">舒适</button>
+              <button class="chip" type="button" data-value="hot">偏热</button>
+              <button class="chip" type="button" data-value="cold">偏冷</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="step is-hidden" data-step="2">
+          <div class="section-heading">
+            <span>页面 02</span>
+            <h2>设置风格与参考</h2>
+            <p>照片为可选项，仅用于当前会话预览。</p>
+          </div>
+
+          <div class="list-options" data-choice-group="mood">
+            <button class="list-option is-selected" type="button" data-value="clean"><span><strong>干净极简</strong><small>低饱和、清晰线条</small></span><b>✓</b></button>
+            <button class="list-option" type="button" data-value="soft"><span><strong>松弛温柔</strong><small>柔软材质、浅色层次</small></span><b>✓</b></button>
+            <button class="list-option" type="button" data-value="retro"><span><strong>轻复古</strong><small>暖色调、经典比例</small></span><b>✓</b></button>
+            <button class="list-option" type="button" data-value="street"><span><strong>都市街头</strong><small>对比色、宽松轮廓</small></span><b>✓</b></button>
+          </div>
+
+          <div class="photo-panel" data-photo-panel>
+            <div class="photo-empty" data-photo-empty>
+              <span>图片占位</span>
+              <strong>添加穿搭参考照片</strong>
+              <small>系统选择器仅支持图片或视频，本 Demo 只接收图片</small>
+              <label class="secondary-button" for="photo-input">选择图片 / 拍照</label>
+            </div>
+            <div class="photo-preview is-hidden" data-photo-preview>
+              <img data-photo-image alt="本次选择的穿搭参考">
+              <div>
+                <strong data-photo-name>已添加参考图</strong>
+                <small>不会写入本机记录</small>
+                <button class="text-link" type="button" data-action="remove-photo">移除照片</button>
+              </div>
+            </div>
+            <input id="photo-input" class="visually-hidden" type="file" accept="image/*" capture="environment">
+          </div>
+        </section>
+
+        <section class="step is-hidden" data-step="3">
+          <div class="section-heading">
+            <span>页面 03</span>
+            <h2>选择可用衣橱</h2>
+            <p>至少选择 3 件，离线规则会优先使用已选单品。</p>
+          </div>
+
+          <div class="closet-summary">
+            <span><strong data-selected-count>4</strong> 件已选</span>
+            <button class="text-link" type="button" data-action="select-defaults">恢复默认</button>
+          </div>
+          <div class="closet-grid" data-closet-grid>
+            <button class="closet-item is-selected" type="button" data-item="shirt" data-type="top"><span>上装</span><strong>白衬衫</strong><i>✓</i></button>
+            <button class="closet-item" type="button" data-item="knit" data-type="top"><span>上装</span><strong>薄针织</strong><i>✓</i></button>
+            <button class="closet-item is-selected" type="button" data-item="blazer" data-type="outer"><span>外套</span><strong>廓形西装</strong><i>✓</i></button>
+            <button class="closet-item is-selected" type="button" data-item="jeans" data-type="bottom"><span>下装</span><strong>直筒牛仔裤</strong><i>✓</i></button>
+            <button class="closet-item" type="button" data-item="skirt" data-type="bottom"><span>下装</span><strong>过膝半裙</strong><i>✓</i></button>
+            <button class="closet-item" type="button" data-item="trousers" data-type="bottom"><span>下装</span><strong>垂感西裤</strong><i>✓</i></button>
+            <button class="closet-item is-selected" type="button" data-item="sneakers" data-type="shoe"><span>鞋履</span><strong>白色球鞋</strong><i>✓</i></button>
+            <button class="closet-item" type="button" data-item="loafers" data-type="shoe"><span>鞋履</span><strong>乐福鞋</strong><i>✓</i></button>
+          </div>
+          <p class="validation-message is-hidden" data-validation>请至少选择 3 件单品。</p>
+        </section>
+
+        <section class="step result-step is-hidden" data-step="4">
+          <div class="section-heading">
+            <span>页面 04 · 离线结果</span>
+            <h2 data-result-title>松弛感通勤叠穿</h2>
+            <p data-result-summary>用清爽内搭建立秩序，再用外套和鞋履补足完整度。</p>
+          </div>
+
+          <div class="result-placeholder">
+            <div class="result-photo-wrap is-hidden" data-result-photo-wrap><img data-result-photo alt="本次穿搭参考图"></div>
+            <span>结果视觉占位区</span>
+            <strong><b data-score>88</b> 适配分</strong>
+            <small>后续可替换为 AI 图片、拼贴图或商品卡片</small>
+          </div>
+
+          <div class="result-list">
+            <div><span>上装</span><strong data-result-top>白衬衫</strong></div>
+            <div><span>层次</span><strong data-result-outer>廓形西装</strong></div>
+            <div><span>下装</span><strong data-result-bottom>直筒牛仔裤</strong></div>
+            <div><span>鞋履</span><strong data-result-shoe>白色球鞋</strong></div>
+          </div>
+
+          <div class="style-note">
+            <strong>搭配逻辑</strong>
+            <p data-result-note>袖口轻挽露出手腕，裤脚保持干净；包和腰带选同一深色，让视觉更收束。</p>
+          </div>
+
+          <div class="result-actions">
+            <button class="primary-button" type="button" data-action="save-look">保存到本机记录</button>
+            <button class="secondary-button" type="button" data-action="restart">重新搭配</button>
+          </div>
+          <p class="save-feedback is-hidden" data-save-feedback>已保存，仅存于当前小工具本地空间。</p>
+        </section>
+
+        <footer class="flow-footer" data-flow-footer>
+          <button class="primary-button" type="button" data-action="next"><span data-next-label>下一步：选择气质</span><span>→</span></button>
+          <p>所有计算在本地完成</p>
+        </footer>
+      </section>
+
+      <section class="screen history-screen is-hidden" data-screen="history">
+        <header class="history-header">
+          <button class="icon-button" type="button" data-action="close-history" aria-label="返回">←</button>
+          <div><span>辅助页面</span><h2>本机搭配记录</h2></div>
+        </header>
+        <div class="history-list" data-history-list></div>
+        <div class="history-empty" data-history-empty>
+          <strong>暂无记录</strong>
+          <p>完成一次穿搭流程后，可以把结果保存在当前小工具中。</p>
+        </div>
+        <p class="history-notice">记录使用 localStorage 保存，仅属于当前小工具，可能随缓存清理而消失。</p>
+        <button class="danger-button is-hidden" type="button" data-action="clear-history">清空全部记录</button>
+      </section>
+    </main>
+  </body>
+</html>
