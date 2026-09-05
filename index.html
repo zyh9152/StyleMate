@@ -1,190 +1,614 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' data: blob:; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
-    >
-    <meta name="theme-color" content="#f7f7f5">
-    <title>StyleMate 流程框架</title>
-    <link rel="stylesheet" href="./style.css">
+      content="default-src 'self' data: blob:; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="theme-color" content="#faf8f2" />
+    <title>StyleMate｜今日穿搭灵感</title>
+    <link rel="stylesheet" href="./style.css" />
     <script src="./app.js" defer></script>
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <button class="brand" type="button" data-action="go-home">StyleMate</button>
+        <button
+          class="brand"
+          type="button"
+          data-action="go-home"
+          aria-label="返回 StyleMate 首页"
+        >
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>StyleMate</span>
+        </button>
         <button class="history-button" type="button" data-action="show-history">
-          本机记录 <span data-history-count>0</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6M12 7v5l3 2"></path>
+          </svg>
+          <span>搭配记录</span><b data-history-count>0</b>
         </button>
       </header>
 
       <section class="screen intro-screen" data-screen="intro">
-        <div class="page-tag">基础流程 Demo</div>
-        <h1>移动端穿搭助手</h1>
-        <p class="lead">先验证用户从输入需求到获得穿搭建议的完整流程，暂不接入在线 AI。</p>
-
-        <div class="placeholder-card">
-          <span>首页视觉占位区</span>
-          <strong>后续可放品牌主视觉或产品说明</strong>
+        <div class="hero-copy">
+          <h1 class="hero-title">
+            <span class="title-ticket ticket-pink">今天，</span>
+            <span class="title-ticket ticket-orange">想穿得</span>
+            <span class="title-last"
+              ><em class="title-ticket ticket-yellow">怎样</em><i>？</i></span
+            >
+          </h1>
+          <span class="title-spark title-spark-mint" aria-hidden="true"></span>
+          <span class="title-spark title-spark-blue" aria-hidden="true"></span>
         </div>
 
-        <div class="flow-overview" aria-label="功能流程">
-          <div><b>1</b><span>选择场景</span></div>
-          <div><b>2</b><span>设置气质<br>添加照片</span></div>
-          <div><b>3</b><span>选择衣橱</span></div>
-          <div><b>4</b><span>查看建议</span></div>
+        <div class="hero-art" aria-hidden="true">
+          <img
+            src="./assets/images/stylemate-flat-look.png"
+            alt=""
+            decoding="async"
+          />
         </div>
 
-        <button class="primary-button" type="button" data-action="start">开始体验</button>
-        <p class="offline-note">完全离线运行 · 照片不会上传</p>
+        <button
+          class="primary-button hero-button"
+          type="button"
+          data-action="start"
+        >
+          <span>开始搭配</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M5 12h13M13 6l6 6-6 6"></path>
+          </svg>
+        </button>
       </section>
 
-      <section class="flow-screen is-hidden" data-screen="flow" aria-live="polite">
+      <section
+        class="flow-screen is-hidden"
+        data-screen="flow"
+        aria-live="polite"
+      >
         <header class="flow-header">
-          <button class="icon-button" type="button" data-action="back" aria-label="返回上一步">←</button>
-          <div>
-            <span data-step-label>第 1 步，共 4 步</span>
-            <strong data-step-title>今天要去哪里？</strong>
+          <button
+            class="icon-button"
+            type="button"
+            data-action="back"
+            aria-label="返回上一步"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m14.5 5-7 7 7 7"></path>
+            </svg>
+          </button>
+          <div class="flow-status">
+            <span data-step-label>1 / 6</span>
+            <strong data-step-title>场合</strong>
           </div>
-          <button class="text-button" type="button" data-action="go-home">退出</button>
+          <button class="text-button" type="button" data-action="go-home">
+            退出
+          </button>
         </header>
-        <div class="progress-track" aria-hidden="true"><span data-progress></span></div>
+        <progress
+          class="visually-hidden"
+          data-progress-native
+          value="1"
+          max="6"
+        >
+          1 / 6
+        </progress>
+        <div class="progress-track" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span
+          ><span></span>
+        </div>
 
         <section class="step" data-step="1">
           <div class="section-heading">
-            <span>页面 01</span>
-            <h2>选择穿搭场景</h2>
-            <p>用于决定建议的正式度和搭配重点。</p>
+            <h2>今天是什么场合？</h2>
+            <p>先确定穿搭需要多正式。</p>
           </div>
-
           <div class="choice-grid" data-choice-group="scene">
-            <button class="choice-card is-selected" type="button" data-value="work"><strong>日常通勤</strong><small>利落、不紧绷</small></button>
-            <button class="choice-card" type="button" data-value="date"><strong>约会见面</strong><small>柔和、有记忆点</small></button>
-            <button class="choice-card" type="button" data-value="weekend"><strong>周末出游</strong><small>舒适、适合走动</small></button>
-            <button class="choice-card" type="button" data-value="interview"><strong>面试汇报</strong><small>专业、可信赖</small></button>
-          </div>
-
-          <div class="field-block">
-            <strong>天气体感</strong>
-            <div class="chip-row" data-choice-group="weather">
-              <button class="chip is-selected" type="button" data-value="mild">舒适</button>
-              <button class="chip" type="button" data-value="hot">偏热</button>
-              <button class="chip" type="button" data-value="cold">偏冷</button>
-            </div>
+            <button
+              class="choice-card tone-blue"
+              type="button"
+              data-value="work"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>通勤上学</strong
+              ><small>利落，但不紧绷</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-pink"
+              type="button"
+              data-value="date"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>约会见面</strong
+              ><small>柔和，有记忆点</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-mint"
+              type="button"
+              data-value="weekend"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>轻松出游</strong
+              ><small>舒服，适合走动</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-yellow"
+              type="button"
+              data-value="event"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>重要表达</strong
+              ><small>专业，有存在感</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
           </div>
         </section>
 
         <section class="step is-hidden" data-step="2">
           <div class="section-heading">
-            <span>页面 02</span>
-            <h2>设置风格与参考</h2>
-            <p>照片为可选项，仅用于当前会话预览。</p>
+            <h2>今天体感温度怎样？</h2>
+            <p>我们会据此调整面料和层次。</p>
           </div>
-
-          <div class="list-options" data-choice-group="mood">
-            <button class="list-option is-selected" type="button" data-value="clean"><span><strong>干净极简</strong><small>低饱和、清晰线条</small></span><b>✓</b></button>
-            <button class="list-option" type="button" data-value="soft"><span><strong>松弛温柔</strong><small>柔软材质、浅色层次</small></span><b>✓</b></button>
-            <button class="list-option" type="button" data-value="retro"><span><strong>轻复古</strong><small>暖色调、经典比例</small></span><b>✓</b></button>
-            <button class="list-option" type="button" data-value="street"><span><strong>都市街头</strong><small>对比色、宽松轮廓</small></span><b>✓</b></button>
-          </div>
-
-          <div class="photo-panel" data-photo-panel>
-            <div class="photo-empty" data-photo-empty>
-              <span>图片占位</span>
-              <strong>添加穿搭参考照片</strong>
-              <small>系统选择器仅支持图片或视频，本 Demo 只接收图片</small>
-              <label class="secondary-button" for="photo-input">选择图片 / 拍照</label>
-            </div>
-            <div class="photo-preview is-hidden" data-photo-preview>
-              <img data-photo-image alt="本次选择的穿搭参考">
-              <div>
-                <strong data-photo-name>已添加参考图</strong>
-                <small>不会写入本机记录</small>
-                <button class="text-link" type="button" data-action="remove-photo">移除照片</button>
-              </div>
-            </div>
-            <input id="photo-input" class="visually-hidden" type="file" accept="image/*" capture="environment">
+          <div class="choice-grid" data-choice-group="weather">
+            <button
+              class="choice-card tone-orange"
+              type="button"
+              data-value="hot"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>炎热</strong
+              ><small>28°C 以上</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-pink"
+              type="button"
+              data-value="warm"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>温暖</strong
+              ><small>20–28°C</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-blue"
+              type="button"
+              data-value="mild"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>微凉</strong
+              ><small>12–20°C</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-mint"
+              type="button"
+              data-value="cold"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>寒冷</strong
+              ><small>12°C 以下</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
           </div>
         </section>
 
         <section class="step is-hidden" data-step="3">
           <div class="section-heading">
-            <span>页面 03</span>
-            <h2>选择可用衣橱</h2>
-            <p>至少选择 3 件，离线规则会优先使用已选单品。</p>
+            <h2>今天会怎么活动？</h2>
+            <p>决定鞋履和造型的松弛度。</p>
           </div>
-
-          <div class="closet-summary">
-            <span><strong data-selected-count>4</strong> 件已选</span>
-            <button class="text-link" type="button" data-action="select-defaults">恢复默认</button>
+          <div class="option-list" data-choice-group="activity">
+            <button
+              class="list-option tone-yellow"
+              type="button"
+              data-value="indoor"
+              aria-pressed="false"
+            >
+              <span class="list-mark"></span
+              ><span
+                ><strong>大部分在室内</strong
+                ><small>久坐、短距离移动</small></span
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="list-option tone-mint"
+              type="button"
+              data-value="walking"
+              aria-pressed="false"
+            >
+              <span class="list-mark"></span
+              ><span
+                ><strong>会走很多路</strong
+                ><small>通勤、逛街或旅行</small></span
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="list-option tone-blue"
+              type="button"
+              data-value="balanced"
+              aria-pressed="false"
+            >
+              <span class="list-mark"></span
+              ><span
+                ><strong>室内外切换</strong
+                ><small>需要灵活增减层次</small></span
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
           </div>
-          <div class="closet-grid" data-closet-grid>
-            <button class="closet-item is-selected" type="button" data-item="shirt" data-type="top"><span>上装</span><strong>白衬衫</strong><i>✓</i></button>
-            <button class="closet-item" type="button" data-item="knit" data-type="top"><span>上装</span><strong>薄针织</strong><i>✓</i></button>
-            <button class="closet-item is-selected" type="button" data-item="blazer" data-type="outer"><span>外套</span><strong>廓形西装</strong><i>✓</i></button>
-            <button class="closet-item is-selected" type="button" data-item="jeans" data-type="bottom"><span>下装</span><strong>直筒牛仔裤</strong><i>✓</i></button>
-            <button class="closet-item" type="button" data-item="skirt" data-type="bottom"><span>下装</span><strong>过膝半裙</strong><i>✓</i></button>
-            <button class="closet-item" type="button" data-item="trousers" data-type="bottom"><span>下装</span><strong>垂感西裤</strong><i>✓</i></button>
-            <button class="closet-item is-selected" type="button" data-item="sneakers" data-type="shoe"><span>鞋履</span><strong>白色球鞋</strong><i>✓</i></button>
-            <button class="closet-item" type="button" data-item="loafers" data-type="shoe"><span>鞋履</span><strong>乐福鞋</strong><i>✓</i></button>
-          </div>
-          <p class="validation-message is-hidden" data-validation>请至少选择 3 件单品。</p>
         </section>
 
-        <section class="step result-step is-hidden" data-step="4">
+        <section class="step is-hidden" data-step="4">
           <div class="section-heading">
-            <span>页面 04 · 离线结果</span>
-            <h2 data-result-title>松弛感通勤叠穿</h2>
-            <p data-result-summary>用清爽内搭建立秩序，再用外套和鞋履补足完整度。</p>
+            <h2>想给人什么感觉？</h2>
+            <p>选一个最接近今天的你。</p>
+          </div>
+          <div class="choice-grid" data-choice-group="mood">
+            <button
+              class="choice-card tone-blue"
+              type="button"
+              data-value="clean"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>干净极简</strong
+              ><small>清晰线条</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-pink"
+              type="button"
+              data-value="soft"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>松弛温柔</strong
+              ><small>柔软亲和</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-orange"
+              type="button"
+              data-value="retro"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>轻复古</strong
+              ><small>经典比例</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-mint"
+              type="button"
+              data-value="street"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>都市街头</strong
+              ><small>宽松醒目</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+          </div>
+        </section>
+
+        <section class="step is-hidden" data-step="5">
+          <div class="section-heading">
+            <h2>今天想穿什么颜色？</h2>
+            <p>我们只控制整体倾向，不限制单件。</p>
+          </div>
+          <div class="palette-list" data-choice-group="color">
+            <button
+              class="palette-option"
+              type="button"
+              data-value="candy"
+              aria-pressed="false"
+            >
+              <span class="palette-sample"><i></i><i></i><i></i></span
+              ><span
+                ><strong>亮色点睛</strong
+                ><small>基础色里加一抹糖果色</small></span
+              ><b class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></b>
+            </button>
+            <button
+              class="palette-option"
+              type="button"
+              data-value="neutral"
+              aria-pressed="false"
+            >
+              <span class="palette-sample palette-neutral"
+                ><i></i><i></i><i></i></span
+              ><span><strong>中性色</strong><small>黑白灰与大地色</small></span
+              ><b class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></b>
+            </button>
+            <button
+              class="palette-option"
+              type="button"
+              data-value="soft"
+              aria-pressed="false"
+            >
+              <span class="palette-sample palette-soft"
+                ><i></i><i></i><i></i></span
+              ><span
+                ><strong>低饱和</strong><small>雾蓝、浅灰与奶油色</small></span
+              ><b class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></b>
+            </button>
+            <button
+              class="palette-option"
+              type="button"
+              data-value="contrast"
+              aria-pressed="false"
+            >
+              <span class="palette-sample palette-contrast"
+                ><i></i><i></i><i></i></span
+              ><span
+                ><strong>大胆撞色</strong
+                ><small>高对比，存在感更强</small></span
+              ><b class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></b>
+            </button>
+          </div>
+        </section>
+
+        <section class="step is-hidden" data-step="6">
+          <div class="section-heading">
+            <h2>穿着时最在意什么？</h2>
+            <p>这会决定整套造型的比例。</p>
+          </div>
+          <div class="choice-grid compact-grid" data-choice-group="fit">
+            <button
+              class="choice-card tone-yellow"
+              type="button"
+              data-value="tall"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>显高利落</strong
+              ><small>提高腰线</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-blue"
+              type="button"
+              data-value="relaxed"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>舒适松弛</strong
+              ><small>保留空间</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-pink"
+              type="button"
+              data-value="waist"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>修饰腰线</strong
+              ><small>强调比例</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+            <button
+              class="choice-card tone-mint"
+              type="button"
+              data-value="easy"
+              aria-pressed="false"
+            >
+              <span class="choice-dot"></span><strong>自在不受限</strong
+              ><small>顺直轮廓</small
+              ><i class="choice-check" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"></path></svg
+              ></i>
+            </button>
+          </div>
+          <div class="photo-panel" data-photo-panel>
+            <div class="photo-empty" data-photo-empty>
+              <span class="photo-icon" aria-hidden="true"
+                ><svg viewBox="0 0 24 24">
+                  <path d="M4 7h4l1.5-2h5L16 7h4v12H4z"></path>
+                  <circle cx="12" cy="13" r="3.5"></circle></svg
+              ></span>
+              <div><strong>有参考照片吗？</strong><small>可选</small></div>
+              <label class="secondary-button small-button" for="photo-input"
+                >添加</label
+              >
+            </div>
+            <div class="photo-preview is-hidden" data-photo-preview>
+              <img
+                src="./assets/images/stylemate-flat-look.png"
+                data-photo-image
+                alt="本次选择的穿搭参考"
+              />
+              <div>
+                <strong data-photo-name>已添加参考图</strong
+                ><small>用于本次搭配</small
+                ><button
+                  class="text-link"
+                  type="button"
+                  data-action="remove-photo"
+                >
+                  移除
+                </button>
+              </div>
+            </div>
+            <input
+              id="photo-input"
+              class="visually-hidden"
+              type="file"
+              accept="image/*"
+              capture="environment"
+            />
+          </div>
+        </section>
+
+        <section class="step result-step is-hidden" data-step="7">
+          <div class="result-heading">
+            <h2 data-result-title>清爽通勤叠穿</h2>
+            <p data-result-summary>
+              利落轮廓里留一点松弛，适合办公室与日常移动。
+            </p>
           </div>
 
-          <div class="result-placeholder">
-            <div class="result-photo-wrap is-hidden" data-result-photo-wrap><img data-result-photo alt="本次穿搭参考图"></div>
-            <span>结果视觉占位区</span>
-            <strong><b data-score>88</b> 适配分</strong>
-            <small>后续可替换为 AI 图片、拼贴图或商品卡片</small>
-          </div>
+          <div class="result-board">
+            <div class="result-details">
+              <ul class="result-list">
+                <li>
+                  <span>上装</span><strong data-result-top>挺括白衬衫</strong>
+                </li>
+                <li>
+                  <span>外套</span><strong data-result-outer>廓形西装</strong>
+                </li>
+                <li>
+                  <span>下装</span
+                  ><strong data-result-bottom>垂感阔腿裤</strong>
+                </li>
+                <li>
+                  <span>鞋履</span><strong data-result-shoe>低跟短靴</strong>
+                </li>
+                <li>
+                  <span>包袋</span><strong data-result-bag>结构感腋下包</strong>
+                </li>
+                <li>
+                  <span>配饰</span
+                  ><strong data-result-accessory>橙色镜框</strong>
+                </li>
+              </ul>
+            </div>
 
-          <div class="result-list">
-            <div><span>上装</span><strong data-result-top>白衬衫</strong></div>
-            <div><span>层次</span><strong data-result-outer>廓形西装</strong></div>
-            <div><span>下装</span><strong data-result-bottom>直筒牛仔裤</strong></div>
-            <div><span>鞋履</span><strong data-result-shoe>白色球鞋</strong></div>
+            <div class="result-visual" data-result-visual data-palette="candy">
+              <img
+                src="./assets/images/stylemate-flat-look.png"
+                data-result-image
+                alt="蓝色西装、白色衬衫、浅蓝长裤与彩色配饰组成的平面穿搭插画"
+              />
+              <div class="result-photo-wrap is-hidden" data-result-photo-wrap>
+                <img
+                  src="./assets/images/stylemate-flat-look.png"
+                  data-result-photo
+                  alt="本次穿搭参考图"
+                />
+              </div>
+            </div>
           </div>
 
           <div class="style-note">
-            <strong>搭配逻辑</strong>
-            <p data-result-note>袖口轻挽露出手腕，裤脚保持干净；包和腰带选同一深色，让视觉更收束。</p>
+            <strong>搭配建议</strong>
+            <p data-result-note>
+              上装轻收，下装保留垂直空间。袖口轻挽，露出手腕更轻盈。
+            </p>
           </div>
-
           <div class="result-actions">
-            <button class="primary-button" type="button" data-action="save-look">保存到本机记录</button>
-            <button class="secondary-button" type="button" data-action="restart">重新搭配</button>
+            <button
+              class="primary-button"
+              type="button"
+              data-action="save-look"
+            >
+              <span>保存搭配</span
+              ><svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M6 4h12v16l-6-4-6 4z"></path>
+              </svg>
+            </button>
+            <button
+              class="secondary-button"
+              type="button"
+              data-action="restart"
+            >
+              重新搭配
+            </button>
           </div>
-          <p class="save-feedback is-hidden" data-save-feedback>已保存，仅存于当前小工具本地空间。</p>
+          <p class="save-feedback is-hidden" data-save-feedback>已收藏。</p>
         </section>
 
         <footer class="flow-footer" data-flow-footer>
-          <button class="primary-button" type="button" data-action="next"><span data-next-label>下一步：选择气质</span><span>→</span></button>
-          <p>所有计算在本地完成</p>
+          <p id="flow-hint" class="flow-hint" data-flow-hint>选择一项后继续</p>
+          <button
+            class="primary-button"
+            type="button"
+            data-action="next"
+            aria-describedby="flow-hint"
+            disabled
+          >
+            <span data-next-label>下一步：气温</span
+            ><svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13M13 6l6 6-6 6"></path>
+            </svg>
+          </button>
         </footer>
       </section>
 
       <section class="screen history-screen is-hidden" data-screen="history">
         <header class="history-header">
-          <button class="icon-button" type="button" data-action="close-history" aria-label="返回">←</button>
-          <div><span>辅助页面</span><h2>本机搭配记录</h2></div>
+          <button
+            class="icon-button"
+            type="button"
+            data-action="close-history"
+            aria-label="返回"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m14.5 5-7 7 7 7"></path>
+            </svg>
+          </button>
+          <h2>搭配记录</h2>
         </header>
         <div class="history-list" data-history-list></div>
         <div class="history-empty" data-history-empty>
-          <strong>暂无记录</strong>
-          <p>完成一次穿搭流程后，可以把结果保存在当前小工具中。</p>
+          <span class="empty-shape" aria-hidden="true"></span
+          ><strong>还没有收藏</strong>
+          <p>完成搭配后，喜欢的造型会出现在这里。</p>
         </div>
-        <p class="history-notice">记录使用 localStorage 保存，仅属于当前小工具，可能随缓存清理而消失。</p>
-        <button class="danger-button is-hidden" type="button" data-action="clear-history">清空全部记录</button>
+        <button
+          class="danger-button is-hidden"
+          type="button"
+          data-action="clear-history"
+        >
+          清空记录
+        </button>
       </section>
     </main>
   </body>

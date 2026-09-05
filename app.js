@@ -1,159 +1,267 @@
-'use strict';
+"use strict";
 
-const STORAGE_KEY = 'stylemate-demo-v1';
-const DEFAULT_ITEMS = ['shirt', 'blazer', 'jeans', 'sneakers'];
+const STORAGE_KEY = "stylemate-personalized-v2";
+const TOTAL_QUESTIONS = 6;
+const RESULT_STEP = 7;
+const QUESTION_KEYS = ["scene", "weather", "activity", "mood", "color", "fit"];
 
 const state = {
   step: 1,
-  scene: 'work',
-  weather: 'mild',
-  mood: 'clean',
-  items: new Set(DEFAULT_ITEMS),
-  photoDataUrl: '',
-  photoName: '',
+  scene: "",
+  weather: "",
+  activity: "",
+  mood: "",
+  color: "",
+  fit: "",
+  photoDataUrl: "",
+  photoName: "",
   history: loadHistory(),
-  previousScreen: 'intro'
+  previousScreen: "intro",
 };
 
 const stepMeta = {
-  1: ['今天要去哪里？', '下一步：选择气质'],
-  2: ['确定穿搭气质', '下一步：选择衣橱'],
-  3: ['选择可用单品', '生成穿搭建议'],
-  4: ['你的穿搭方案', '']
+  1: ["场合", "下一步：气温"],
+  2: ["气温", "下一步：行程"],
+  3: ["行程", "下一步：气质"],
+  4: ["气质", "下一步：配色"],
+  5: ["配色", "下一步：版型"],
+  6: ["版型", "生成完整搭配"],
+  7: ["搭配完成", ""],
 };
 
-const itemNames = {
-  shirt: '白衬衫',
-  knit: '薄针织',
-  blazer: '廓形西装',
-  jeans: '直筒牛仔裤',
-  skirt: '过膝半裙',
-  trousers: '垂感西裤',
-  sneakers: '白色球鞋',
-  loafers: '乐福鞋'
-};
-
-const sceneRules = {
+const sceneProfiles = {
   work: {
-    title: '松弛感通勤叠穿',
-    summary: '用清爽内搭建立秩序，再用外套和鞋履补足完整度。',
-    note: '袖口轻挽露出手腕，裤脚保持干净；包和腰带选同一深色，让视觉更收束。',
-    score: 88,
-    defaults: { top: 'shirt', outer: 'blazer', bottom: 'jeans', shoe: 'loafers' }
+    title: "通勤叠穿",
+    summary: "利落轮廓里留一点松弛，适合办公室与日常移动。",
+    bag: "结构感腋下包",
   },
   date: {
-    title: '温柔但有重点的约会装',
-    summary: '用柔软上装靠近面部，再把亮点留给流动的下装和精致鞋履。',
-    note: '上半身保持轻盈，首饰只选一处；如果加外套，敞开穿能保留纵向线条。',
-    score: 91,
-    defaults: { top: 'knit', outer: 'blazer', bottom: 'skirt', shoe: 'loafers' }
+    title: "约会造型",
+    summary: "把视觉重点放在面部附近，柔和但不会显得刻意。",
+    bag: "小号半月包",
   },
   weekend: {
-    title: '轻松有层次的周末组合',
-    summary: '把舒适单品放在主体位置，用干净配色避免造型显得随意。',
-    note: '裤脚和鞋面之间留一点空隙；温差大时把针织搭在肩上，既实用也增加层次。',
-    score: 93,
-    defaults: { top: 'shirt', outer: 'knit', bottom: 'jeans', shoe: 'sneakers' }
+    title: "周末轻装",
+    summary: "轻便层次与舒适比例兼顾，适合散步和临时行程。",
+    bag: "轻量托特包",
   },
-  interview: {
-    title: '可信赖的专业轮廓',
-    summary: '利落肩线搭配垂直下装，传达清晰、克制又有准备的状态。',
-    note: '衣领、裤线和鞋面保持整洁；全身颜色控制在三种以内，重点会自然回到你本人。',
-    score: 90,
-    defaults: { top: 'shirt', outer: 'blazer', bottom: 'trousers', shoe: 'loafers' }
-  }
+  event: {
+    title: "重要场合套装",
+    summary: "清晰肩线和完整配色，让表达更有分量。",
+    bag: "简洁手提包",
+  },
 };
 
-const weatherNotes = {
-  mild: '',
-  hot: ' 偏热时把外套改为手持，优先选择透气上装。',
-  cold: ' 偏冷时增加贴身打底，并让外层长度盖过腰线。'
+const weatherProfiles = {
+  hot: {
+    outer: "轻薄短袖衬衫",
+    note: "外层敞开穿，选择透气面料。",
+  },
+  warm: {
+    outer: "轻量棉质外套",
+    note: "保留可脱下的轻薄外层。",
+  },
+  mild: {
+    outer: "廓形西装",
+    note: "袖口轻挽，露出手腕更轻盈。",
+  },
+  cold: {
+    outer: "长款羊毛外套",
+    note: "用贴身打底减少厚重感。",
+  },
 };
 
-const moodAdjustments = {
-  clean: { titlePrefix: '', score: 0 },
-  soft: { titlePrefix: '柔和', score: 1 },
-  retro: { titlePrefix: '轻复古', score: -1 },
-  street: { titlePrefix: '都市', score: 0 }
+const activityProfiles = {
+  indoor: {
+    shoe: "软皮乐福鞋",
+    note: "鞋面保持简洁，适合久坐与室内移动。",
+  },
+  walking: {
+    shoe: "轻量白色球鞋",
+    note: "鞋底优先缓震，裤脚不要堆在鞋面。",
+  },
+  balanced: {
+    shoe: "低跟短靴",
+    note: "低跟兼顾步行和正式度。",
+  },
 };
 
-const screens = Array.from(document.querySelectorAll('[data-screen]'));
-const steps = Array.from(document.querySelectorAll('[data-step]'));
-const flowFooter = document.querySelector('[data-flow-footer]');
-const photoInput = document.querySelector('#photo-input');
+const moodProfiles = {
+  clean: {
+    prefix: "清爽",
+    top: "挺括白衬衫",
+    detail: "保持线条干净，只留一个视觉重点。",
+  },
+  soft: {
+    prefix: "柔和",
+    top: "奶油色细针织",
+    detail: "让柔软材质靠近面部，整体更亲和。",
+  },
+  retro: {
+    prefix: "轻复古",
+    top: "焦糖色翻领针织",
+    detail: "用经典领型和暖色小面积定调。",
+  },
+  street: {
+    prefix: "都市",
+    top: "短款灰色卫衣",
+    detail: "上短下长，保留宽松但清晰的轮廓。",
+  },
+};
 
-document.addEventListener('click', handleClick);
-photoInput.addEventListener('change', handlePhotoSelection);
+const colorProfiles = {
+  candy: {
+    name: "亮色点睛",
+    accessory: "橙色镜框",
+    note: "亮色控制在两处，其余用基础色连接。",
+    image: "./assets/images/stylemate-flat-look.png",
+    imageAlt: "蓝色外套与明亮配饰组成的平面穿搭插画",
+  },
+  neutral: {
+    name: "中性色",
+    accessory: "银色细框眼镜",
+    note: "用深浅层次代替强烈色差。",
+    image: "./assets/images/stylemate-flat-look.png",
+    imageAlt: "利落外套、长裤与简洁配饰组成的平面穿搭插画",
+  },
+  soft: {
+    name: "低饱和",
+    accessory: "雾蓝丝巾",
+    note: "相邻颜色保持相近明度，画面更柔和。",
+    image: "./assets/images/stylemate-flat-look-soft.png",
+    imageAlt: "薄荷色开衫、粉色半裙与白色球鞋组成的平面穿搭插画",
+  },
+  contrast: {
+    name: "大胆撞色",
+    accessory: "亮色几何耳饰",
+    note: "让撞色集中在上半身和配饰之间。",
+    image: "./assets/images/stylemate-flat-look-bold.png",
+    imageAlt: "橙色夹克、蓝色针织与黄色短靴组成的平面穿搭插画",
+  },
+};
+
+const fitProfiles = {
+  tall: {
+    bottom: "高腰直筒西裤",
+    note: "腰线提高两指，裤长刚好覆盖鞋面。",
+  },
+  relaxed: {
+    bottom: "垂感阔腿裤",
+    note: "上装轻收，下装保留垂直空间。",
+  },
+  waist: {
+    bottom: "高腰 A 字半裙",
+    note: "把最窄处留在腰线上方，比例更清楚。",
+  },
+  easy: {
+    bottom: "直筒牛仔裤",
+    note: "不强调曲线，用顺直裤线保持精神。",
+  },
+};
+
+const screens = Array.from(document.querySelectorAll("[data-screen]"));
+const steps = Array.from(document.querySelectorAll("[data-step]"));
+const flowFooter = document.querySelector("[data-flow-footer]");
+const photoInput = document.querySelector("#photo-input");
+
+document.addEventListener("click", handleClick);
+photoInput.addEventListener("change", handlePhotoSelection);
 renderHistory();
 restorePreferences();
 
 function handleClick(event) {
-  const actionTarget = event.target.closest('[data-action]');
+  const actionTarget = event.target.closest("[data-action]");
   if (actionTarget) {
     runAction(actionTarget.dataset.action);
     return;
   }
 
-  const choice = event.target.closest('[data-choice-group] button[data-value]');
-  if (choice) {
-    selectChoice(choice);
-    return;
-  }
-
-  const closetItem = event.target.closest('.closet-item');
-  if (closetItem) toggleClosetItem(closetItem);
+  const choice = event.target.closest("[data-choice-group] button[data-value]");
+  if (choice) selectChoice(choice);
 }
 
 function runAction(action) {
   const actions = {
-    start: () => showFlow(1),
+    start: startFlow,
     next: goNext,
     back: goBack,
-    'go-home': goHome,
+    "go-home": goHome,
     restart: restartFlow,
-    'remove-photo': clearPhoto,
-    'select-defaults': selectDefaults,
-    'save-look': saveLook,
-    'show-history': showHistory,
-    'close-history': closeHistory,
-    'clear-history': clearHistory
+    "remove-photo": clearPhoto,
+    "save-look": saveLook,
+    "show-history": showHistory,
+    "close-history": closeHistory,
+    "clear-history": clearHistory,
   };
   if (actions[action]) actions[action]();
 }
 
 function showScreen(name) {
-  screens.forEach((screen) => screen.classList.toggle('is-hidden', screen.dataset.screen !== name));
-  document.querySelector('.topbar').classList.toggle('is-hidden', name === 'flow');
+  screens.forEach((screen) => {
+    screen.classList.toggle("is-hidden", screen.dataset.screen !== name);
+  });
+  document
+    .querySelector(".topbar")
+    .classList.toggle("is-hidden", name !== "intro");
   window.scrollTo(0, 0);
 }
 
 function showFlow(step) {
   state.step = step;
-  showScreen('flow');
+  showScreen("flow");
   renderStep();
 }
 
 function renderStep() {
-  steps.forEach((step) => step.classList.toggle('is-hidden', Number(step.dataset.step) !== state.step));
-  document.querySelector('[data-step-label]').textContent = `第 ${state.step} 步，共 4 步`;
-  document.querySelector('[data-step-title]').textContent = stepMeta[state.step][0];
-  document.querySelector('.progress-track').dataset.progressStep = String(state.step);
-  flowFooter.classList.toggle('is-hidden', state.step === 4);
-  if (state.step < 4) document.querySelector('[data-next-label]').textContent = stepMeta[state.step][1];
-  if (state.step === 4) renderResult();
+  steps.forEach((step) => {
+    step.classList.toggle(
+      "is-hidden",
+      Number(step.dataset.step) !== state.step,
+    );
+  });
+
+  const isResult = state.step === RESULT_STEP;
+  document
+    .querySelector('[data-screen="flow"]')
+    .classList.toggle("is-result-view", isResult);
+  document.querySelector("[data-step-label]").textContent = isResult
+    ? "完成"
+    : `${state.step} / ${TOTAL_QUESTIONS}`;
+  document.querySelector("[data-step-title]").textContent =
+    stepMeta[state.step][0];
+
+  const progressValue = Math.min(state.step, TOTAL_QUESTIONS);
+  const progress = document.querySelector(".progress-track");
+  progress.dataset.progressStep = String(progressValue);
+  const nativeProgress = document.querySelector("[data-progress-native]");
+  nativeProgress.value = progressValue;
+  nativeProgress.textContent = `${progressValue} / ${TOTAL_QUESTIONS}`;
+
+  flowFooter.classList.toggle("is-hidden", isResult);
+  if (!isResult) {
+    document.querySelector("[data-next-label]").textContent =
+      stepMeta[state.step][1];
+  }
+  updateStepAvailability();
+  if (isResult) renderResult();
   window.scrollTo(0, 0);
 }
 
 function goNext() {
-  if (state.step === 3 && state.items.size < 3) {
-    document.querySelector('[data-validation]').classList.remove('is-hidden');
-    return;
-  }
-  if (state.step < 4) {
+  if (state.step < RESULT_STEP) {
+    const answerKey = QUESTION_KEYS[state.step - 1];
+    if (!answerKey || !state[answerKey]) return;
+
     state.step += 1;
     savePreferences();
     renderStep();
   }
+}
+
+function startFlow() {
+  resetAnswers();
+  clearPhoto();
+  showFlow(1);
 }
 
 function goBack() {
@@ -166,118 +274,130 @@ function goBack() {
 }
 
 function goHome() {
-  state.previousScreen = 'intro';
-  showScreen('intro');
+  state.previousScreen = "intro";
+  showScreen("intro");
 }
 
 function restartFlow() {
+  resetAnswers();
   state.step = 1;
-  document.querySelector('[data-save-feedback]').classList.add('is-hidden');
+  clearPhoto();
+  document.querySelector("[data-save-feedback]").classList.add("is-hidden");
   renderStep();
 }
 
 function selectChoice(choice) {
-  const group = choice.closest('[data-choice-group]');
-  group.querySelectorAll('button[data-value]').forEach((button) => button.classList.remove('is-selected'));
-  choice.classList.add('is-selected');
-  state[group.dataset.choiceGroup] = choice.dataset.value;
-  savePreferences();
-}
-
-function toggleClosetItem(item) {
-  const id = item.dataset.item;
-  if (state.items.has(id)) state.items.delete(id);
-  else state.items.add(id);
-  item.classList.toggle('is-selected', state.items.has(id));
-  document.querySelector('[data-selected-count]').textContent = String(state.items.size);
-  document.querySelector('[data-validation]').classList.toggle('is-hidden', state.items.size >= 3);
-  savePreferences();
-}
-
-function selectDefaults() {
-  state.items = new Set(DEFAULT_ITEMS);
-  renderCloset();
-  savePreferences();
-}
-
-function renderCloset() {
-  document.querySelectorAll('.closet-item').forEach((item) => {
-    item.classList.toggle('is-selected', state.items.has(item.dataset.item));
+  const group = choice.closest("[data-choice-group]");
+  group.querySelectorAll("button[data-value]").forEach((button) => {
+    button.classList.remove("is-selected");
+    button.setAttribute("aria-pressed", "false");
   });
-  document.querySelector('[data-selected-count]').textContent = String(state.items.size);
-  document.querySelector('[data-validation]').classList.add('is-hidden');
+  choice.classList.add("is-selected");
+  choice.setAttribute("aria-pressed", "true");
+  state[group.dataset.choiceGroup] = choice.dataset.value;
+  document.querySelector("[data-save-feedback]").classList.add("is-hidden");
+  savePreferences();
+  updateStepAvailability();
+}
+
+function updateStepAvailability() {
+  if (state.step === RESULT_STEP) return;
+
+  const answerKey = QUESTION_KEYS[state.step - 1];
+  const hasAnswer = Boolean(answerKey && state[answerKey]);
+  const nextButton = document.querySelector('[data-action="next"]');
+  const hint = document.querySelector("[data-flow-hint]");
+
+  if (nextButton) nextButton.disabled = !hasAnswer;
+  if (hint) hint.classList.toggle("is-hidden", hasAnswer);
+}
+
+function resetAnswers() {
+  QUESTION_KEYS.forEach((key) => {
+    state[key] = "";
+  });
+
+  document
+    .querySelectorAll("[data-choice-group] button[data-value]")
+    .forEach((button) => {
+      button.classList.remove("is-selected");
+      button.setAttribute("aria-pressed", "false");
+    });
 }
 
 function handlePhotoSelection(event) {
   const file = event.target.files && event.target.files[0];
-  if (!file || !file.type.startsWith('image/')) return;
+  if (!file || !file.type.startsWith("image/")) return;
 
   const reader = new FileReader();
-  reader.addEventListener('load', () => {
-    state.photoDataUrl = String(reader.result || '');
+  reader.addEventListener("load", () => {
+    state.photoDataUrl = String(reader.result || "");
     state.photoName = file.name;
-    document.querySelector('[data-photo-image]').src = state.photoDataUrl;
-    document.querySelector('[data-photo-name]').textContent = file.name;
-    document.querySelector('[data-photo-empty]').classList.add('is-hidden');
-    document.querySelector('[data-photo-preview]').classList.remove('is-hidden');
+    document.querySelector("[data-photo-image]").src = state.photoDataUrl;
+    document.querySelector("[data-photo-name]").textContent = file.name;
+    document.querySelector("[data-photo-empty]").classList.add("is-hidden");
+    document
+      .querySelector("[data-photo-preview]")
+      .classList.remove("is-hidden");
   });
   reader.readAsDataURL(file);
 }
 
 function clearPhoto() {
-  state.photoDataUrl = '';
-  state.photoName = '';
-  photoInput.value = '';
-  document.querySelector('[data-photo-image]').removeAttribute('src');
-  document.querySelector('[data-photo-empty]').classList.remove('is-hidden');
-  document.querySelector('[data-photo-preview]').classList.add('is-hidden');
+  state.photoDataUrl = "";
+  state.photoName = "";
+  photoInput.value = "";
+  document.querySelector("[data-photo-image]").removeAttribute("src");
+  document.querySelector("[data-photo-empty]").classList.remove("is-hidden");
+  document.querySelector("[data-photo-preview]").classList.add("is-hidden");
+}
+
+function buildLook() {
+  const scene = sceneProfiles[state.scene];
+  const weather = weatherProfiles[state.weather];
+  const activity = activityProfiles[state.activity];
+  const mood = moodProfiles[state.mood];
+  const color = colorProfiles[state.color];
+  const fit = fitProfiles[state.fit];
+
+  return {
+    title: `${mood.prefix}${scene.title}`,
+    summary: `${scene.summary} 配色选择“${color.name}”。`,
+    top: mood.top,
+    outer: weather.outer,
+    bottom: fit.bottom,
+    shoe: activity.shoe,
+    bag: scene.bag,
+    accessory: color.accessory,
+    note: `${fit.note}${weather.note}${activity.note}${mood.detail}${color.note}`,
+    image: color.image,
+    imageAlt: color.imageAlt,
+    palette: state.color,
+  };
 }
 
 function renderResult() {
   const look = buildLook();
-  document.querySelector('[data-result-title]').textContent = look.title;
-  document.querySelector('[data-result-summary]').textContent = look.summary;
-  document.querySelector('[data-result-note]').textContent = look.note;
-  document.querySelector('[data-score]').textContent = String(look.score);
-  document.querySelector('[data-result-top]').textContent = look.top;
-  document.querySelector('[data-result-outer]').textContent = look.outer;
-  document.querySelector('[data-result-bottom]').textContent = look.bottom;
-  document.querySelector('[data-result-shoe]').textContent = look.shoe;
-  const photoWrap = document.querySelector('[data-result-photo-wrap]');
-  photoWrap.classList.toggle('is-hidden', !state.photoDataUrl);
-  if (state.photoDataUrl) document.querySelector('[data-result-photo]').src = state.photoDataUrl;
-}
 
-function buildLook() {
-  const base = sceneRules[state.scene];
-  const mood = moodAdjustments[state.mood];
-  const picked = Array.from(state.items);
-  const findByType = (type, fallback) => {
-    const found = picked.find((id) => {
-      const node = document.querySelector(`[data-item="${id}"]`);
-      return node && node.dataset.type === type;
-    });
-    if (found) return found;
-    if (state.items.has(fallback)) return fallback;
-    return '暂缺，可沿用相近款';
-  };
+  document.querySelector("[data-result-title]").textContent = look.title;
+  document.querySelector("[data-result-summary]").textContent = look.summary;
+  document.querySelector("[data-result-note]").textContent = look.note;
+  document.querySelector("[data-result-top]").textContent = look.top;
+  document.querySelector("[data-result-outer]").textContent = look.outer;
+  document.querySelector("[data-result-bottom]").textContent = look.bottom;
+  document.querySelector("[data-result-shoe]").textContent = look.shoe;
+  document.querySelector("[data-result-bag]").textContent = look.bag;
+  document.querySelector("[data-result-accessory]").textContent =
+    look.accessory;
+  document.querySelector("[data-result-image]").src = look.image;
+  document.querySelector("[data-result-image]").alt = look.imageAlt;
+  document.querySelector("[data-result-visual]").dataset.palette = look.palette;
 
-  const topId = findByType('top', base.defaults.top);
-  const outerId = findByType('outer', base.defaults.outer);
-  const bottomId = findByType('bottom', base.defaults.bottom);
-  const shoeId = findByType('shoe', base.defaults.shoe);
-  const name = (id) => itemNames[id] || id;
-
-  return {
-    title: mood.titlePrefix ? `${mood.titlePrefix} · ${base.title}` : base.title,
-    summary: base.summary,
-    note: base.note + weatherNotes[state.weather],
-    score: Math.max(80, Math.min(96, base.score + mood.score + Math.min(2, state.items.size - 3))),
-    top: name(topId),
-    outer: name(outerId),
-    bottom: name(bottomId),
-    shoe: name(shoeId)
-  };
+  const photoWrap = document.querySelector("[data-result-photo-wrap]");
+  photoWrap.classList.toggle("is-hidden", !state.photoDataUrl);
+  if (state.photoDataUrl) {
+    document.querySelector("[data-result-photo]").src = state.photoDataUrl;
+  }
 }
 
 function saveLook() {
@@ -285,88 +405,90 @@ function saveLook() {
   const entry = {
     id: String(Date.now()),
     title: look.title,
-    items: [look.top, look.outer, look.bottom, look.shoe],
-    score: look.score,
-    createdAt: new Date().toISOString()
+    items: [
+      look.top,
+      look.outer,
+      look.bottom,
+      look.shoe,
+      look.bag,
+      look.accessory,
+    ],
+    createdAt: new Date().toISOString(),
   };
   state.history = [entry, ...state.history].slice(0, 12);
   writeHistory();
   renderHistory();
-  document.querySelector('[data-save-feedback]').classList.remove('is-hidden');
+  document.querySelector("[data-save-feedback]").classList.remove("is-hidden");
 }
 
 function showHistory() {
-  const current = screens.find((screen) => !screen.classList.contains('is-hidden'));
-  state.previousScreen = current ? current.dataset.screen : 'intro';
+  const current = screens.find(
+    (screen) => !screen.classList.contains("is-hidden"),
+  );
+  state.previousScreen = current ? current.dataset.screen : "intro";
   renderHistory();
-  showScreen('history');
+  showScreen("history");
 }
 
 function closeHistory() {
-  showScreen(state.previousScreen === 'history' ? 'intro' : state.previousScreen);
+  showScreen(
+    state.previousScreen === "history" ? "intro" : state.previousScreen,
+  );
 }
 
 function renderHistory() {
-  const list = document.querySelector('[data-history-list]');
-  const empty = document.querySelector('[data-history-empty]');
+  const list = document.querySelector("[data-history-list]");
+  const empty = document.querySelector("[data-history-empty]");
   const clearButton = document.querySelector('[data-action="clear-history"]');
   list.replaceChildren();
 
   state.history.forEach((entry) => {
-    const card = document.createElement('article');
-    card.className = 'history-card';
+    const card = document.createElement("article");
+    card.className = "history-card";
 
-    const mark = document.createElement('span');
-    mark.className = 'history-card-mark';
-    mark.textContent = String(entry.score);
-
-    const copy = document.createElement('div');
-    const title = document.createElement('strong');
+    const copy = document.createElement("div");
+    const title = document.createElement("strong");
     title.textContent = entry.title;
-    const items = document.createElement('p');
-    items.textContent = entry.items.join(' · ');
+    const items = document.createElement("p");
+    items.textContent = entry.items.join(" · ");
     copy.append(title, items);
 
-    const time = document.createElement('time');
+    const time = document.createElement("time");
     const date = new Date(entry.createdAt);
     time.dateTime = entry.createdAt;
     time.textContent = `${date.getMonth() + 1}/${date.getDate()}`;
 
-    card.append(mark, copy, time);
+    card.append(copy, time);
     list.append(card);
   });
 
   const hasHistory = state.history.length > 0;
-  empty.classList.toggle('is-hidden', hasHistory);
-  clearButton.classList.toggle('is-hidden', !hasHistory);
-  document.querySelector('[data-history-count]').textContent = String(state.history.length);
+  empty.classList.toggle("is-hidden", hasHistory);
+  clearButton.classList.toggle("is-hidden", !hasHistory);
+  document.querySelector("[data-history-count]").textContent = String(
+    state.history.length,
+  );
 }
 
 function clearHistory() {
-  if (!window.confirm('确定清空当前小工具内的全部搭配记录吗？')) return;
+  if (!window.confirm("确定清空全部搭配记录吗？")) return;
   state.history = [];
   writeHistory();
   renderHistory();
 }
 
 function savePreferences() {
-  const payload = {
-    scene: state.scene,
-    weather: state.weather,
-    mood: state.mood,
-    items: Array.from(state.items),
-    history: state.history
-  };
+  const payload = { history: state.history };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (error) {
-    // 沙箱可能禁用或清理本地存储；流程仍可在当前会话中继续。
+    // 当前会话仍可继续。
   }
 }
 
 function loadHistory() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     return Array.isArray(saved.history) ? saved.history : [];
   } catch (error) {
     return [];
@@ -374,23 +496,7 @@ function loadHistory() {
 }
 
 function restorePreferences() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (sceneRules[saved.scene]) state.scene = saved.scene;
-    if (Object.prototype.hasOwnProperty.call(weatherNotes, saved.weather)) state.weather = saved.weather;
-    if (Object.prototype.hasOwnProperty.call(moodAdjustments, saved.mood)) state.mood = saved.mood;
-    if (Array.isArray(saved.items) && saved.items.length) state.items = new Set(saved.items.filter((id) => itemNames[id]));
-  } catch (error) {
-    // 使用默认偏好。
-  }
-
-  ['scene', 'weather', 'mood'].forEach((groupName) => {
-    const group = document.querySelector(`[data-choice-group="${groupName}"]`);
-    group.querySelectorAll('button[data-value]').forEach((button) => {
-      button.classList.toggle('is-selected', button.dataset.value === state[groupName]);
-    });
-  });
-  renderCloset();
+  resetAnswers();
 }
 
 function writeHistory() {
